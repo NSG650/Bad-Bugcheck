@@ -1,0 +1,77 @@
+;
+; BadBugcheck!!.inf
+;
+
+[Version]
+Signature="$WINDOWS NT$"
+Class=System ; TODO: specify appropriate Class
+ClassGuid={4d36e97d-e325-11ce-bfc1-08002be10318} ; TODO: specify appropriate ClassGuid
+Provider=%ManufacturerName%
+CatalogFile=BadBugcheck!!.cat
+DriverVer= ; TODO: set DriverVer in stampinf property pages
+PnpLockdown=1
+
+[DestinationDirs]
+DefaultDestDir = 12
+BadBugcheck!!_Device_CoInstaller_CopyFiles = 11
+
+[SourceDisksNames]
+1 = %DiskName%,,,""
+
+[SourceDisksFiles]
+BadBugcheck!!.sys  = 1,,
+WdfCoInstaller$KMDFCOINSTALLERVERSION$.dll=1 ; make sure the number matches with SourceDisksNames
+
+;*****************************************
+; Install Section
+;*****************************************
+
+[Manufacturer]
+%ManufacturerName%=Standard,NT$ARCH$
+
+[Standard.NT$ARCH$]
+%BadBugcheck!!.DeviceDesc%=BadBugcheck!!_Device, Root\BadBugcheck!! ; TODO: edit hw-id
+
+[BadBugcheck!!_Device.NT]
+CopyFiles=Drivers_Dir
+
+[Drivers_Dir]
+BadBugcheck!!.sys
+
+;-------------- Service installation
+[BadBugcheck!!_Device.NT.Services]
+AddService = BadBugcheck!!,%SPSVCINST_ASSOCSERVICE%, BadBugcheck!!_Service_Inst
+
+; -------------- BadBugcheck!! driver install sections
+[BadBugcheck!!_Service_Inst]
+DisplayName    = %BadBugcheck!!.SVCDESC%
+ServiceType    = 1               ; SERVICE_KERNEL_DRIVER
+StartType      = 3               ; SERVICE_DEMAND_START
+ErrorControl   = 1               ; SERVICE_ERROR_NORMAL
+ServiceBinary  = %12%\BadBugcheck!!.sys
+
+;
+;--- BadBugcheck!!_Device Coinstaller installation ------
+;
+
+[BadBugcheck!!_Device.NT.CoInstallers]
+AddReg=BadBugcheck!!_Device_CoInstaller_AddReg
+CopyFiles=BadBugcheck!!_Device_CoInstaller_CopyFiles
+
+[BadBugcheck!!_Device_CoInstaller_AddReg]
+HKR,,CoInstallers32,0x00010000, "WdfCoInstaller$KMDFCOINSTALLERVERSION$.dll,WdfCoInstaller"
+
+[BadBugcheck!!_Device_CoInstaller_CopyFiles]
+WdfCoInstaller$KMDFCOINSTALLERVERSION$.dll
+
+[BadBugcheck!!_Device.NT.Wdf]
+KmdfService =  BadBugcheck!!, BadBugcheck!!_wdfsect
+[BadBugcheck!!_wdfsect]
+KmdfLibraryVersion = $KMDFVERSION$
+
+[Strings]
+SPSVCINST_ASSOCSERVICE= 0x00000002
+ManufacturerName="<Your manufacturer name>" ;TODO: Replace with your manufacturer name
+DiskName = "BadBugcheck!! Installation Disk"
+BadBugcheck!!.DeviceDesc = "BadBugcheck!! Device"
+BadBugcheck!!.SVCDESC = "BadBugcheck!! Service"
