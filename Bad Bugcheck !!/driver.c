@@ -154,8 +154,7 @@ VOID BadAppleEntry(VOID) {
         RtlCopyMemory(Framebuffer, ImageData, w * h * 4);
         KeDelayExecutionThread(KernelMode, FALSE, &Delay);
         ExFreePool(ImageBuffer);
-        stbi_image_free(ImageData);                                 // More stupid things. The rendering/displaying is already slow we dont need to add any delays lmfao
-                                                                    // We aren't crashing here unlike the BOOTVID version.
+        stbi_image_free(ImageData);
     }
 }
 
